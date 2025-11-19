@@ -106,10 +106,10 @@ namespace MergeNotiPj
                         {
                             RunNotificationService("J_NOTI_EVERYDAY", config.dbConnectionString, guid, responeModel.MemoId, "J_NOTI");
                         }
-                        else
-                        {
-                            RunNotificationService("J_NOTI_EVERYDAY", config.dbConnectionString, guid, responeModel.MemoId, "J_NOTI");
-                        }
+                        //else
+                        //{
+                        //    RunNotificationService("J_NOTI_EVERYDAY", config.dbConnectionString, guid, responeModel.MemoId, "J_NOTI");
+                        //}
                     }
                 }
             }
