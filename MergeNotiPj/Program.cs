@@ -1338,7 +1338,7 @@ namespace MergeNotiPj
                                 string effectiveDateString = advanceForm?.FirstOrDefault(x => (x.label != null && x.label.Contains("วันที่ต้องการประกาศใช้")) || (x.alter != null && x.alter.Contains("Effective Date")))?.value ?? "";
                                 DateTime effectiveDate = DateTimeHelper.ConvertStringToDateTime(effectiveDateString) ?? DateTime.MinValue;
                                 Log("วันที่ต้องการประกาศใช้ : " + effectiveDateString);
-                                if (TruncateTime(effectiveDate) != beforeDate)
+                                if (TruncateTime(effectiveDate) == beforeDate)
                                 {
                                     memoModel.Add(memo);
                                     foreach (var row in tableRelated)
