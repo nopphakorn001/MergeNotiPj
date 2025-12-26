@@ -106,10 +106,10 @@ namespace MergeNotiPj
                         {
                             RunNotificationService("J_NOTI_EVERYDAY", config.dbConnectionString, guid, responeModel.MemoId, "J_NOTI");
                         }
-                        //else
-                        //{
-                        //    RunNotificationService("J_NOTI_EVERYDAY", config.dbConnectionString, guid, responeModel.MemoId, "J_NOTI");
-                        //}
+                        else
+                        {
+                            RunNotificationService("J_NOTI_EVERYDAY", config.dbConnectionString, guid, responeModel.MemoId, "J_NOTI");
+                        }
                     }
                 }
             }
@@ -1316,7 +1316,7 @@ namespace MergeNotiPj
             if (templateModel.Any())
             {
                 var memos = dbContext.TRNMemoes
-                .Where(x => templateModel.Contains(x.TemplateId) /*&& EntityFunctions.TruncateTime(x.Memo.ModifiedDate) == beforeDate*/ && x.StatusName == Ext.Status._Completed)
+                .Where(x => templateModel.Contains(x.TemplateId)  /*&& EntityFunctions.TruncateTime(x.Memo.ModifiedDate) == beforeDate*/ && x.StatusName == Ext.Status._Completed)
                 .ToList();
 
                 var memoModel = new List<TRNMemo>();
@@ -1338,12 +1338,18 @@ namespace MergeNotiPj
                                 string effectiveDateString = advanceForm?.FirstOrDefault(x => (x.label != null && x.label.Contains("วันที่ต้องการประกาศใช้")) || (x.alter != null && x.alter.Contains("Effective Date")))?.value ?? "";
                                 DateTime effectiveDate = DateTimeHelper.ConvertStringToDateTime(effectiveDateString) ?? DateTime.MinValue;
                                 Log("วันที่ต้องการประกาศใช้ : " + effectiveDateString);
-                                if (TruncateTime(effectiveDate) == beforeDate)
+                                if (TruncateTime(effectiveDate) != beforeDate)
                                 {
                                     memoModel.Add(memo);
                                     foreach (var row in tableRelated)
                                     {
-                                        var areaCode = row.FirstOrDefault(x => x.label != null && x.label.Contains("รหัสพื้นที่ ISO"))?.value;
+                                        //var areaCode = row.FirstOrDefault(x => x.label != null && x.label.Contains("รหัสพื้นที ISO"))?.value;
+
+                                        var areaCode = row
+                                                     .FirstOrDefault(x =>
+                                                         Normalize(x.label) == "รหัสพื้นที่ ISO"
+                                                         || Normalize(x.label) == "รหัสพื้นที ISO"
+                                                     )?.value;
                                         if (!string.IsNullOrEmpty(areaCode) && areaCode.Split(':').Count() > 0)
                                             emails.AddRange(GetEmailInArea(areaCode, dbContext));
                                     }
@@ -1860,6 +1866,12 @@ namespace MergeNotiPj
 
             return Results;
         }
+        public static string Normalize(string s) =>
+         s?
+         .Replace("\u00A0", " ")   // NBSP
+         .Replace("\n", "")
+         .Replace("\r", "")
+         .Trim();
 
         public static bool checkDataBooleanIsNull(object input)
         {
